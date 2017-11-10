@@ -12,6 +12,7 @@ namespace XDPM_PHATHANHSACH.Models
         {
         }
         public virtual DbSet<CT_DAILY> CT_DAILY { get; set; }
+        public virtual DbSet<CT_NXB> CT_NXB { get; set; }
         public virtual DbSet<CT_PHIEUCHI> CT_PHIEUCHI { get; set; }
         public virtual DbSet<CT_PHIEUNHAP> CT_PHIEUNHAP { get; set; }
         public virtual DbSet<CT_PHIEUTHU> CT_PHIEUTHU { get; set; }

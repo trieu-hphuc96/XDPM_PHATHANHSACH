@@ -28,7 +28,7 @@
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
         <div class="form-group">
-            @Html.LabelFor(model => model.px.MADL, "Mã NXB", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.px.MADL, "Mã Đại Lý", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.DropDownList("px.MADL", (SelectList)ViewBag.MADL, htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.px.MADL, "", new { @class = "text-danger" })
@@ -38,7 +38,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.px.NGAYXUAT, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.px.NGAYXUAT, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.px.NGAYXUAT, new { htmlAttributes = new { @class = "form-control"} })
                 @Html.ValidationMessageFor(model => model.px.NGAYXUAT, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -190,9 +190,10 @@
     function XoaBang() {
         document.getElementById("chitiet").innerHTML = "<tr> <th>Thứ tự</th><th>Mã Sách</th><th>Tên Sách</th><th>Số lượng</th></tr>";
         dynamicID = 0;
+        x = [];
+
         tongtien = 0;
         document.getElementById("tongtien").value = 0;
-        x = [];
     }
 
     function MASACH_SOLUONG() {

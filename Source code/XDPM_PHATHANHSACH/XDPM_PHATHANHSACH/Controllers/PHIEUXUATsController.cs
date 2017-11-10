@@ -93,8 +93,6 @@ namespace XDPM_PHATHANHSACH.Controllers
                 }
                 else
                 {
-
-
                     db.PHIEUXUATs.Add(px);
                     db.SaveChanges();
 

@@ -42,6 +42,7 @@ namespace XDPM_PHATHANHSACH.Controllers
         {
             ViewBag.MANXB = new SelectList(db.NXBs, "MANXB", "TENNXB");
             ViewBag.MASACH = new SelectList(db.SACHes, "MASACH", "TENSACH");
+            ViewBag.GIA = new SelectList(db.SACHes, "MASACH", "GIA");
             ViewBag.KNhapSach = 0;
             return View();
         }
@@ -58,6 +59,7 @@ namespace XDPM_PHATHANHSACH.Controllers
                 {
                     ViewBag.MANXB = new SelectList(db.NXBs, "MANXB", "TENNXB");
                     ViewBag.MASACH = new SelectList(db.SACHes, "MASACH", "TENSACH");
+                    ViewBag.GIA = new SelectList(db.SACHes, "MASACH", "GIA");
                     ViewBag.KNhapSach = 1;
                     return View();
                 }
@@ -79,6 +81,26 @@ namespace XDPM_PHATHANHSACH.Controllers
                         a.SOLUONG = a.SOLUONG + u.SOLUONG;
                         tongtien = tongtien + u.SOLUONG * a.GIA;
 
+                        CT_NXB ctnxb;
+                        bool check = db.CT_NXB.Any(re => re.MANXB.Equals(pn.MANXB) && re.MASACH.Equals(u.MASACH));
+                        if (!check)
+                        {
+                            ctnxb = new CT_NXB();
+                            ctnxb.MANXB = pn.MANXB;
+                            ctnxb.MASACH = u.MASACH;
+                            ctnxb.GIA = u.GIA;
+                            ctnxb.SLLAY = u.SOLUONG;
+                            ctnxb.SLDABAN = 0;
+
+                            db.CT_NXB.Add(ctnxb);
+                        }
+                        else
+                        {
+                            ctnxb = db.CT_NXB.Where(re => re.MANXB == pn.MANXB).Single(re2 => re2.MASACH == u.MASACH);
+                            ctnxb.SLLAY += u.SOLUONG;
+                            db.Entry(ctnxb).State = EntityState.Modified;
+                        }
+
                         db.CT_PHIEUNHAP.Add(u);
                         db.Entry(a).State = EntityState.Modified;
                     }
@@ -98,6 +120,7 @@ namespace XDPM_PHATHANHSACH.Controllers
 
             ViewBag.MANXB = new SelectList(db.NXBs, "MANXB", "TENNXB");
             ViewBag.MASACH = new SelectList(db.SACHes, "MASACH", "TENSACH");
+            ViewBag.GIA = new SelectList(db.SACHes, "MASACH", "GIA");
             ViewBag.KNhapSach = 0;
             return View();
         }

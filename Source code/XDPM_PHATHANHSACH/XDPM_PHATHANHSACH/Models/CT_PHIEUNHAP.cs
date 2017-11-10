@@ -18,6 +18,7 @@
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int MASACH { get; set; }
 
+        [Display(Name = "Giá")]
         public int? GIA { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập số lượng!")]
