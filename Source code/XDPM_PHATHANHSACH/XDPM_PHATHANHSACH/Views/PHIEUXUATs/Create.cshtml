@@ -1,0 +1,215 @@
+﻿@model XDPM_PHATHANHSACH.Models.PHIEUXUAT_CTPHIEUXUAT
+@{
+    ViewBag.Title = "Tạo phiếu xuất";
+    Layout = "~/Views/Shared/_LayoutSBAdmin.cshtml";
+    if(ViewBag.XuatQuaNhieu == 1)
+    {
+        <script>
+            alert("Tổng tiền vượt quá số nợ cho phép (10.000.000 Đ) ! Vui lòng xuất lại!")
+        </script>
+    }
+
+    if (ViewBag.KNhapSach == 1)
+    {
+        <script>
+            alert("Vui lòng nhập thông tin sách cần xuất!")
+        </script>
+    }
+}
+
+<h2>Tạo phiếu xuất</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal">
+        <h4>Thông tin cơ bản</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.px.MADL, "Mã NXB", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("px.MADL", (SelectList)ViewBag.MADL, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.px.MADL, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.px.NGAYXUAT, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.px.NGAYXUAT, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.px.NGAYXUAT, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.px.NGUOINHAN, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.px.NGUOINHAN, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.px.NGUOINHAN, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2"> Tổng tiền </label>
+            <div class="col-md-10">
+                <input class="form-control" type="text" id="tongtien" name="px.TONGTIEN" value="0" readonly/>
+            </div>
+        </div>
+
+    </div>
+
+    <h4>Thông tin chi tiết</h4>
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            <label class="control-label col-md-2"> Mã Sách</label>
+            <div class="col-md-10">
+                @Html.DropDownList("MASACH", null, htmlAttributes: new { @class = "form-control", @id = "item", @onchange = "MASACH_SOLUONG();" })
+                @Html.ValidationMessageFor(model => model.ctpx.MASACH, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2"> Số lượng còn</label>
+            <div class="col-md-10">
+                @Html.DropDownList("SOLUONG", null, htmlAttributes: new { @class = "form-control", @id = "soluongcon", @disabled="disabled" })
+                @Html.ValidationMessageFor(model => model.ctpx.SOLUONG, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ctpx.GIA, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("GIA", null, htmlAttributes: new { @class = "form-control", @id = "gia", @disabled = "disabled" })
+                @Html.ValidationMessageFor(model => model.ctpx.GIA, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ctpx.SOLUONG, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ctpx.SOLUONG, new { htmlAttributes = new { @class = "form-control", @id = "amount" , @Value=0} })
+                @Html.ValidationMessageFor(model => model.ctpx.SOLUONG, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="button" id="btnThemsach" value="Thêm sách" onclick="inRow()" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group" id="ThemSach">
+    </div>
+
+    <table class="table" id="chitiet">
+        <tr>
+            <th>
+                Thứ tự
+            </th>
+            <th>
+                Mã Sách
+            </th>
+            <th>
+                Tên Sách
+            </th>
+            <th>
+                Giá
+            </th>
+            <th>
+                Số lượng
+            </th>
+            <th>
+                Thành tiền
+            </th>
+            <th></th>
+        </tr>
+    </table>
+    <div class="form-inline">
+        <div class="col-md-offset-10">
+            <input type="button" onclick="XoaBang()" value="Làm mới" class="btn btn-default" />
+            <input type="submit" onclick="SuaTongTien()" value="Tạo phiếu" class="btn btn-default" />
+        </div>
+    </div>
+}
+
+
+<script>
+
+    var dynamicID = 0
+    var x = [];
+    var tongtien = 0;
+    var gia = 0;
+
+    window.onload = function () {
+        gia = parseInt($("#gia option:selected").text())
+        $("#gia option:selected").text(gia.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+    };
+
+    function inRow() {
+
+        for (i = 0; i < x.length; i++) {
+            if ($('#item').val() == x[i]) {
+                return alert("Quyển này đã được nhập! Vui lòng chọn quyển khác!");
+            }
+        }
+
+        x.push($('#item').val());
+
+
+        if ($('#amount').val() <= parseInt($("#soluongcon option:selected").text())) {
+            dynamicID += 1;
+
+            $('#chitiet').append(
+            "<tr>" +
+            "<td>" + dynamicID + "</td>" +
+            "<td>" + $('#item').val() + "</td> " +
+            "<td>" + $("#item option:selected").text() + "</td>" +
+            "<td>" + gia.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }) + "</td>" +
+            "<td>" + $('#amount').val() + "</td>" +
+            "<td>" + (gia * $('#amount').val()).toLocaleString('vi-VN', { style: 'currency', currency: 'VND'}) + "</td>")
+
+            $("#ThemSach").append('<input type="hidden" name="[' + (dynamicID - 1) + '].MASACH" value="' + $('#item').val() + '" />' +
+                                  '<input type="hidden" name="[' + (dynamicID - 1) + '].SOLUONG" value="' + $('#amount').val() + '" />' +
+                                  '<input type="hidden" name="[' + (dynamicID - 1) + '].GIA" value="' + gia + '" />');
+
+            tongtien = tongtien + $('#amount').val() * gia;
+            document.getElementById("tongtien").value = tongtien.toLocaleString('vi-VN', { style: 'currency', currency: 'VND'});
+        }
+        else {
+            x.pop();
+            alert("" + $("#item option:selected").text() + " chỉ còn " + $("#soluongcon option:selected").text() + " quyển. Vui lòng nhập lại!")
+        }
+    };
+
+    function XoaBang() {
+        document.getElementById("chitiet").innerHTML = "<tr> <th>Thứ tự</th><th>Mã Sách</th><th>Tên Sách</th><th>Số lượng</th></tr>";
+        dynamicID = 0;
+        tongtien = 0;
+        document.getElementById("tongtien").value = 0;
+        x = [];
+    }
+
+    function MASACH_SOLUONG() {
+        
+        $("#gia option:selected").text(gia);
+        document.getElementById("gia").value = $('#item').val();
+        gia = parseInt($("#gia option:selected").text())
+        $("#gia option:selected").text(gia.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+
+        document.getElementById("soluongcon").value = $('#item').val();
+
+        document.getElementById("amount").value = 0;
+    };
+
+    function SuaTongTien() {
+        document.getElementById("tongtien").value = tongtien;
+    }
+
+</script>
+

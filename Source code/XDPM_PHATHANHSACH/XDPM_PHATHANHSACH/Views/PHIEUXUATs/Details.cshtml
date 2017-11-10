@@ -1,0 +1,51 @@
+﻿@model XDPM_PHATHANHSACH.Models.PHIEUXUAT
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_LayoutSBAdmin.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>PHIEUXUAT</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.DAILY.TENDL)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DAILY.TENDL)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NGAYXUAT)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NGAYXUAT)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NGUOINHAN)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NGUOINHAN)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TONGTIEN)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TONGTIEN)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.MAPX }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

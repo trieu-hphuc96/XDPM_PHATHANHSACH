@@ -1,0 +1,68 @@
+﻿@using System.Data
+@model DataTable
+
+@{
+    ViewBag.Title = "Thống Kê Tồn Kho";
+    Layout = "~/Views/Shared/_LayoutSBAdmin.cshtml";
+}
+
+<h2>Thống Kê Tồn Kho</h2>
+@using (Html.BeginForm())
+{
+   <form class="form-inline" method="post" >
+        <div class="form-group">
+            <div class="col-sm-2">
+                <h4><label>Chọn ngày:</label></h4> 
+            </div>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" id="datepicker" name="datepicker" value=@ViewBag.ngay><br>
+            </div>
+            <div class="col-sm-4">
+                <input type="submit" class="btn btn-default" value="Lọc">
+            </div>
+        </div>
+   </form>
+}
+
+<table class="table">
+    <tr>
+        <th>
+            Tên Sách
+        </th>
+        <th>
+            Tác giả
+        </th>
+        <th>
+            Thể loại
+        </th>
+        <th>
+            Số lượng tồn
+        </th>
+        <th>
+            Giá
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (DataRow row in Model.Rows)
+    {
+        <tr>
+            <td>
+                @(row.Field<string>("TENSACH"))
+            </td>
+            <td>
+                @(row.Field<string>("TACGIA"))
+            </td>
+            <td>
+                @(row.Field<string>("THELOAI"))
+            </td>
+            <td>
+                @(row.Field<int>("SOLUONGTON"))
+            </td>
+            <td>
+                @(row.Field<int>("GIA"))
+            </td>
+        </tr>
+    }
+    
+</table>
