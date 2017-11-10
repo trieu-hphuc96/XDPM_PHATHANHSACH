@@ -1,0 +1,181 @@
+﻿@model XDPM_PHATHANHSACH.Models.CT_PHIEUTHU_CT_DAILY
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_LayoutSBAdmin.cshtml";
+}
+
+<h2>Thêm chi tiết phiếu thu</h2>
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    <h4>Thông tin chi tiết</h4>
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            <label class="control-label col-md-2"> Mã Sách</label>
+            <div class="col-md-10">
+                @Html.DropDownList("MASACH",null, htmlAttributes: new { @class = "form-control", @id = "item", @onchange = "MASACH_SOLUONG();" })
+                @Html.ValidationMessageFor(model => model.ctpt.MASACH, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ctpt.GIA, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("GIA", null, htmlAttributes: new { @class = "form-control", @id = "gia", @disabled = "disabled" })
+                @Html.ValidationMessageFor(model => model.ctpt.GIA, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2"> Số lượng đã lấy</label>
+            <div class="col-md-10">
+                @Html.DropDownList("SLLAY", null, htmlAttributes: new { @class = "form-control", @id = "soluonglay", @disabled = "disabled" })
+                @Html.ValidationMessageFor(model => model.ctdl.SLLAY, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2"> Số lượng đã bán</label>
+            <div class="col-md-10">
+                @Html.DropDownList("SLDABAN", null, htmlAttributes: new { @class = "form-control", @id = "soluongban", @disabled = "disabled" })
+                @Html.ValidationMessageFor(model => model.ctdl.SLLAY, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2"> Số lượng</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ctpt.SOLUONG, new { htmlAttributes = new { @class = "form-control", @id = "amount", @Value = 0 } })
+                @Html.ValidationMessageFor(model => model.ctpt.SOLUONG, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="button" id="btnThemsach" value="Thêm sách" onclick="inRow()" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group" id="ThemSach">
+    </div>
+
+    <table class="table" id="chitiet">
+        <tr>
+            <th>
+                Thứ tự
+            </th>
+            <th>
+                Mã Sách
+            </th>
+            <th>
+                Tên Sách
+            </th>
+            <th>
+                Giá
+            </th>
+            <th>
+                Số lượng
+            </th>
+            <th>
+                Thành tiền
+            </th>
+            <th></th>
+        </tr>
+    </table>
+
+    <div class="form-horizontal">
+        <hr />
+        <div class="form-group">
+            <label class="control-label col-md-2"> Tổng tiền </label>
+            <div class="col-md-10">
+                <input class="form-control" type="text" id="tongtien" value="0" readonly />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-horizontal">
+        <div class="form-group">
+            <div class="col-md-offset-10">
+                <input type="button" onclick="XoaBang()" value="Làm mới" class="btn btn-default" />
+                <input type="submit" onclick="SuaTongTien()" value="Tạo phiếu" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    var dynamicID = 0;
+    var gia = 0;
+    var x = [];
+    var tongtien = 0;
+
+    window.onload = function () {
+        gia = parseInt($("#gia option:selected").text())
+        $("#gia option:selected").text(gia.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+    };
+
+    function inRow() {
+
+        for (i = 0; i < x.length; i++) {
+            if ($('#item').val() == x[i]) {
+                return alert("Quyển này đã được nhập! Vui lòng chọn quyển khác!");
+            }
+        }
+
+        x.push($('#item').val());
+
+        if ($('#amount').val() <= (parseInt($("#soluonglay option:selected").text()) - parseInt($("#soluongban option:selected").text())))
+        {
+            dynamicID += 1;
+
+            $('#chitiet').append(
+            "<tr>" +
+            "<td>" + dynamicID + "</td>" +
+            "<td>" + $('#item').val() + "</td> " +
+            "<td>" + $("#item option:selected").text() + "</td>" +
+            "<td>" + gia.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }) + "</td>" +
+            "<td>" + $('#amount').val() + "</td>" +
+            "<td>" + (gia * $('#amount').val()).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }) + "</td>")
+
+            $("#chitiet").append('<input type="hidden" name="[' + (dynamicID - 1) + '].MASACH" value="' + $('#item').val() + '" />' +
+                                  '<input type="hidden" name="[' + (dynamicID - 1) + '].SOLUONG" value="' + $('#amount').val() + '" />' +
+                                  '<input type="hidden" name="[' + (dynamicID - 1) + '].GIA" value="' + gia + '" />');
+
+            tongtien = tongtien + $('#amount').val() * gia;
+            document.getElementById("tongtien").value = tongtien.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+        }
+        else {
+            x.pop();
+            alert("" + $("#item option:selected").text() + " chỉ còn " + (parseInt($("#soluonglay option:selected").text()) - parseInt($("#soluongban option:selected").text())) + " quyển. Vui lòng nhập lại!")
+        }
+    };
+
+    function XoaBang() {
+        document.getElementById("chitiet").innerHTML = "<tr> <th>Thứ tự</th><th>Mã Sách</th><th>Tên Sách</th><th>Giá</th><th>Số lượng</th><th>Thành tiền</th></tr>";
+        dynamicID = 0;
+        x = [];
+
+        tongtien = 0;
+        document.getElementById("tongtien").value = 0;
+    }
+
+
+    function MASACH_SOLUONG() {
+
+        $("#gia option:selected").text(gia);
+        document.getElementById("gia").value = $('#item').val();
+        gia = parseInt($("#gia option:selected").text())
+        $("#gia option:selected").text(gia.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+
+        document.getElementById("soluonglay").value = $('#item').val();
+        document.getElementById("soluongban").value = $('#item').val();
+
+        document.getElementById("amount").value = 0;
+    };
+</script>

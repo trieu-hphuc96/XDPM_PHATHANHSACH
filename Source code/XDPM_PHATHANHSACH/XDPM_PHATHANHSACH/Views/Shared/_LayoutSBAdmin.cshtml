@@ -81,7 +81,15 @@
                             <!-- /.nav-second-level -->
                         </li>
                         <li>
-                            <a href="@Url.Action("Index", "DAILYs")"><i class="fa fa-money fa-fw"></i> Quản Lý Công Nợ</a>
+                            <a href="#"><i class="fa fa-money fa-fw"></i> Quản Lý Công Nợ<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    @Html.ActionLink("Tạo phiếu thu", "Create", "PhieuThus")
+                                </li>
+                                <li>
+                                    @Html.ActionLink("Tạo phiếu chi", "Create", "PhieuChis")
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </div>

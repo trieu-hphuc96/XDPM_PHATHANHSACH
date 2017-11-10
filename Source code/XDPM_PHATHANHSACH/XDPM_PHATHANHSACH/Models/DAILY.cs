@@ -1,4 +1,4 @@
-namespace XDPM_PHATHANHSACH.Models
+﻿namespace XDPM_PHATHANHSACH.Models
 {
     using System;
     using System.Collections.Generic;
@@ -17,6 +17,7 @@ namespace XDPM_PHATHANHSACH.Models
             PHIEUXUATs = new HashSet<PHIEUXUAT>();
         }
 
+        [Display(Name = "Mã Đại Lý")]
         [Key]
         public int MADL { get; set; }
 

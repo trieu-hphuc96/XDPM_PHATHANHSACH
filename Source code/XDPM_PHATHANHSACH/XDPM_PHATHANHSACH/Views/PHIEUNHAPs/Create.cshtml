@@ -20,7 +20,7 @@
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
-            @Html.LabelFor(model => model.pn.MANXB, "Mã NXB", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.pn.MANXB, "Tên NXB", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.DropDownList("pn.MANXB", (SelectList)ViewBag.MANXB, htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.pn.MANXB, "", new { @class = "text-danger" })
@@ -160,7 +160,7 @@
     }
 
     function XoaBang() {
-        document.getElementById("chitiet").innerHTML = "<tr> <th>Thứ tự</th><th>Mã Sách</th><th>Tên Sách</th><th>Số lượng</th></tr>";
+        document.getElementById("chitiet").innerHTML = "<tr> <th>Thứ tự</th><th>Mã Sách</th><th>Tên Sách</th><th>Giá</th><th>Số lượng</th><th>Thành tiền</th></tr>";
         dynamicID = 0;
         x = [];
 
