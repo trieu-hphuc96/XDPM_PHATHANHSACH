@@ -39,11 +39,13 @@ namespace XDPM_PHATHANHSACH.Controllers
         // GET: CT_PHIEUTHU/Create
         public ActionResult Create()
         {
-            var a = Session["phieuthu"] as XDPM_PHATHANHSACH.Models.PHIEUTHU;
-            ViewBag.MASACH = new SelectList(db.CT_DAILY.Include(s=>s.SACH).Where(x=>x.MADL == a.MADL), "MASACH", "SACH.TENSACH");
-            ViewBag.GIA = new SelectList(db.CT_DAILY.Include(s => s.SACH).Where(x => x.MADL == a.MADL), "MASACH", "GIA");
-            ViewBag.SLLAY = new SelectList(db.CT_DAILY.Include(s => s.SACH).Where(x => x.MADL == a.MADL), "MASACH", "SLLAY");
-            ViewBag.SLDABAN = new SelectList(db.CT_DAILY.Include(s => s.SACH).Where(x => x.MADL == a.MADL), "MASACH", "SLDABAN");
+            var pt = Session["phieuthu"] as XDPM_PHATHANHSACH.Models.PHIEUTHU;
+            ViewBag.MASACH = new SelectList(db.CT_DAILY.Include(s => s.SACH).Where(x => x.MADL == pt.MADL), "MASACH", "SACH.TENSACH");
+            ViewBag.GIA = new SelectList(db.CT_DAILY.Include(s => s.SACH).Where(x => x.MADL == pt.MADL), "MASACH", "GIA");
+            ViewBag.SLLAY = new SelectList(db.CT_DAILY.Include(s => s.SACH).Where(x => x.MADL == pt.MADL), "MASACH", "SLLAY");
+            ViewBag.SLDABAN = new SelectList(db.CT_DAILY.Include(s => s.SACH).Where(x => x.MADL == pt.MADL), "MASACH", "SLDABAN");
+
+            ViewBag.KNhapSach = 0;
 
             return View();
         }
@@ -52,19 +54,61 @@ namespace XDPM_PHATHANHSACH.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "MAPT,MASACH,GIA,SOLUONG,THANHTIEN")] CT_PHIEUTHU cT_PHIEUTHU)
+        public ActionResult Create( ICollection<CT_PHIEUTHU> ctpts)
         {
+            var pt = Session["phieuthu"] as XDPM_PHATHANHSACH.Models.PHIEUTHU;
+
             if (ModelState.IsValid)
             {
-                db.CT_PHIEUTHU.Add(cT_PHIEUTHU);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if(ctpts == null)
+                {
+                    ViewBag.MASACH = new SelectList(db.CT_DAILY.Include(s => s.SACH).Where(x => x.MADL == pt.MADL), "MASACH", "SACH.TENSACH");
+                    ViewBag.GIA = new SelectList(db.CT_DAILY.Include(s => s.SACH).Where(x => x.MADL == pt.MADL), "MASACH", "GIA");
+                    ViewBag.SLLAY = new SelectList(db.CT_DAILY.Include(s => s.SACH).Where(x => x.MADL == pt.MADL), "MASACH", "SLLAY");
+                    ViewBag.SLDABAN = new SelectList(db.CT_DAILY.Include(s => s.SACH).Where(x => x.MADL == pt.MADL), "MASACH", "SLDABAN");
+
+                    ViewBag.KNhapSach = 1;
+
+                    return View();
+                }
+                else
+                {
+                    pt.TONGTIEN = Convert.ToInt32(Request.Form["tongtien"]);
+
+                    db.PHIEUTHUs.Add(pt);
+                    db.SaveChanges();
+
+                    int _maPT = db.PHIEUTHUs.Max(p => p.MAPT);
+
+                    foreach(CT_PHIEUTHU ctpt in ctpts)
+                    {
+                        ctpt.MAPT = _maPT;
+
+                        SACH s = db.SACHes.Find(ctpt.MASACH);
+                        ctpt.GIA = s.GIA;
+                        ctpt.THANHTIEN = ctpt.SOLUONG * ctpt.GIA;
+
+                        //cập nhật số lượng đã trả trong chi tiết đại lý
+                        CT_DAILY _ctdl = db.CT_DAILY.Where(d => d.MADL == pt.MADL).Single(m => m.MASACH == ctpt.MASACH);
+                        _ctdl.SLDABAN += ctpt.SOLUONG;
+
+                        db.CT_PHIEUTHU.Add(ctpt);
+                        db.Entry(_ctdl).State = EntityState.Modified;
+                    }
+                    db.SaveChanges();
+
+                    return RedirectToAction("Index","PHIEUTHUs");
+                }
             }
 
-            ViewBag.MAPT = new SelectList(db.PHIEUTHUs, "MAPT", "MAPT", cT_PHIEUTHU.MAPT);
-            ViewBag.MASACH = new SelectList(db.SACHes, "MASACH", "TENSACH", cT_PHIEUTHU.MASACH);
-            return View(cT_PHIEUTHU);
+            ViewBag.MASACH = new SelectList(db.CT_DAILY.Include(s => s.SACH).Where(x => x.MADL == pt.MADL), "MASACH", "SACH.TENSACH");
+            ViewBag.GIA = new SelectList(db.CT_DAILY.Include(s => s.SACH).Where(x => x.MADL == pt.MADL), "MASACH", "GIA");
+            ViewBag.SLLAY = new SelectList(db.CT_DAILY.Include(s => s.SACH).Where(x => x.MADL == pt.MADL), "MASACH", "SLLAY");
+            ViewBag.SLDABAN = new SelectList(db.CT_DAILY.Include(s => s.SACH).Where(x => x.MADL == pt.MADL), "MASACH", "SLDABAN");
+
+            ViewBag.KNhapSach = 0;
+
+            return View();
         }
 
         // GET: CT_PHIEUTHU/Edit/5

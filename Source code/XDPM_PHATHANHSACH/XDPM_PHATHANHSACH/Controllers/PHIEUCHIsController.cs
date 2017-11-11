@@ -52,9 +52,8 @@ namespace XDPM_PHATHANHSACH.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.PHIEUCHIs.Add(pHIEUCHI);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                Session["phieuchi"] = pHIEUCHI;
+                return RedirectToAction("Create","CT_PHIEUCHI");
             }
 
             ViewBag.MANXB = new SelectList(db.NXBs, "MANXB", "TENNXB", pHIEUCHI.MANXB);

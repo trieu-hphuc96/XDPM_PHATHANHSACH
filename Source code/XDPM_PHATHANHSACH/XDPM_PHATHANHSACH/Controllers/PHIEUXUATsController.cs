@@ -45,8 +45,10 @@ namespace XDPM_PHATHANHSACH.Controllers
             ViewBag.MASACH = new SelectList(db.SACHes, "MASACH", "TENSACH");
             ViewBag.SOLUONG = new SelectList(db.SACHes, "MASACH", "SOLUONG");
             ViewBag.GIA = new SelectList(db.SACHes, "MASACH", "GIA");
+
             ViewBag.XuatQuaNhieu = 0;
             ViewBag.KNhapSach = 0;
+
             return View();
         }
 
@@ -58,80 +60,73 @@ namespace XDPM_PHATHANHSACH.Controllers
         {
             if (ModelState.IsValid)
             {
-                int tongtien = 0;
-                if (ctpxs != null)
-                {
-                    foreach (CT_PHIEUXUAT u in ctpxs)
-                    {
-                        SACH a = db.SACHes.Find(u.MASACH);
-                        u.GIA = a.GIA;
-                        u.THANHTIEN = u.SOLUONG * u.GIA;
-                        a.SOLUONG = a.SOLUONG - u.SOLUONG;
-                        tongtien = tongtien + u.SOLUONG * a.GIA;
-                    }
-                }
-                else
+                int tongtien = CT_PHIEUXUAT.tinhTongTienPhieuXuat(ctpxs, db.SACHes);
+
+                if (ctpxs == null) //kiểm tra nghiệp vụ
                 {
                     ViewBag.MADL = new SelectList(db.DAILies, "MADL", "TENDL");
                     ViewBag.MASACH = new SelectList(db.SACHes, "MASACH", "TENSACH");
                     ViewBag.SOLUONG = new SelectList(db.SACHes, "MASACH", "SOLUONG");
                     ViewBag.GIA = new SelectList(db.SACHes, "MASACH", "GIA");
+
                     ViewBag.XuatQuaNhieu = 0;
                     ViewBag.KNhapSach = 1;
+
                     return View();
                 }
-
-                if (tongtien > 10000000)
+                else if (tongtien > 10000000)
                 {
                     ViewBag.MADL = new SelectList(db.DAILies, "MADL", "TENDL");
                     ViewBag.MASACH = new SelectList(db.SACHes, "MASACH", "TENSACH");
                     ViewBag.SOLUONG = new SelectList(db.SACHes, "MASACH", "SOLUONG");
                     ViewBag.GIA = new SelectList(db.SACHes, "MASACH", "GIA");
+
                     ViewBag.XuatQuaNhieu = 1;
                     ViewBag.KNhapSach = 0;
                     return View();
                 }
-                else
+                else //thêm phiếu xuất và chi tiết phiếu xuất
                 {
                     db.PHIEUXUATs.Add(px);
                     db.SaveChanges();
 
                     int ma = db.PHIEUXUATs.Max(p => p.MAPX);
-                    foreach (CT_PHIEUXUAT u in ctpxs)
+                    foreach (CT_PHIEUXUAT ctpx in ctpxs)
                     {
-                        if (u != null)
+                        if (ctpx != null)
                         {
-                            u.MAPX = ma;
-                            SACH a = db.SACHes.Find(u.MASACH);
-                            u.GIA = a.GIA;
-                            u.THANHTIEN = u.SOLUONG * u.GIA;
-                            a.SOLUONG = a.SOLUONG - u.SOLUONG;
+                            ctpx.MAPX = ma;
+                            SACH s = db.SACHes.Find(ctpx.MASACH);
+                            ctpx.GIA = s.GIA;
+                            ctpx.THANHTIEN = ctpx.SOLUONG * ctpx.GIA;
+                            s.SOLUONG = s.SOLUONG - ctpx.SOLUONG;
 
                             CT_DAILY ctdl;
-                            bool check = db.CT_DAILY.Any(re => re.MADL.Equals(px.MADL) && re.MASACH.Equals(u.MASACH));
+                            bool check = db.CT_DAILY.Any(re => re.MADL.Equals(px.MADL) && re.MASACH.Equals(ctpx.MASACH));
                             if (!check)
                             {
                                 ctdl = new CT_DAILY();
                                 ctdl.MADL = px.MADL;
-                                ctdl.MASACH = u.MASACH;
-                                ctdl.GIA = u.GIA;
-                                ctdl.SLLAY = u.SOLUONG;
+                                ctdl.MASACH = ctpx.MASACH;
+                                ctdl.GIA = ctpx.GIA;
+                                ctdl.SLLAY = ctpx.SOLUONG;
                                 ctdl.SLDABAN = 0;
 
                                 db.CT_DAILY.Add(ctdl);
                             }
                             else
                             {
-                                ctdl = db.CT_DAILY.Where(re => re.MADL == px.MADL).Single(re2 => re2.MASACH == u.MASACH);
-                                ctdl.SLLAY += u.SOLUONG;
+                                ctdl = db.CT_DAILY.Where(re => re.MADL == px.MADL).Single(re2 => re2.MASACH == ctpx.MASACH);
+                                ctdl.SLLAY += ctpx.SOLUONG;
                                 db.Entry(ctdl).State = EntityState.Modified;
                             }
 
-                            db.CT_PHIEUXUAT.Add(u);
-                            db.Entry(a).State = EntityState.Modified;
+                            db.CT_PHIEUXUAT.Add(ctpx);
+                            db.Entry(s).State = EntityState.Modified;
                         }
                     }
 
+                    //thêm tổng tiền phiếu xuất và cập nhật tiền nợ đại lý
                     PHIEUXUAT px_tam = db.PHIEUXUATs.Find(ma);
                     px_tam.TONGTIEN = tongtien;
                     db.Entry(px_tam).State = EntityState.Modified;

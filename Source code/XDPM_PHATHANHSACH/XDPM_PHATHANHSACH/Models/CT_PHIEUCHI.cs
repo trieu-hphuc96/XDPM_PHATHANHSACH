@@ -18,6 +18,7 @@ namespace XDPM_PHATHANHSACH.Models
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int MASACH { get; set; }
 
+        [Display(Name = "Giá")]
         public int? GIA { get; set; }
 
         public int? SOLUONG { get; set; }

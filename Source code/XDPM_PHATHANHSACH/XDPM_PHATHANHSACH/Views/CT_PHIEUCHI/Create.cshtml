@@ -1,9 +1,9 @@
-﻿@model XDPM_PHATHANHSACH.Models.CT_PHIEUTHU_CT_DAILY
+﻿@model XDPM_PHATHANHSACH.Models.CT_PHIEUCHI_CT_NXB
 
 @{
-    ViewBag.Title = "Thêm chi tiết phiếu thu";
+    ViewBag.Title = "Thêm chi thiết phiếu chi";
     Layout = "~/Views/Shared/_LayoutSBAdmin.cshtml";
-
+    
     if (ViewBag.KNhapSach == 1)
     {
         <script>
@@ -12,29 +12,30 @@
     }
 }
 
-<h2>Thêm chi tiết phiếu thu</h2>
+<h2>Thêm chi thiết phiếu chi</h2>
 
 @using (Html.BeginForm()) 
 {
     @Html.AntiForgeryToken()
-    <h4>Thông tin chi tiết</h4>
 
     <div class="form-horizontal">
+        <h4>Thông tin chi tiết</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
         <div class="form-group">
-            <label class="control-label col-md-2"> Mã Sách</label>
+            @Html.LabelFor(model => model.ctpc.MASACH, "Tên Sách", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownList("MASACH",null, htmlAttributes: new { @class = "form-control", @id = "item", @onchange = "MASACH_SOLUONG();" })
-                @Html.ValidationMessageFor(model => model.ctpt.MASACH, "", new { @class = "text-danger" })
+                @Html.DropDownList("MASACH", null, htmlAttributes: new { @class = "form-control", @id = "item", @onchange = "MASACH_SOLUONG();" })
+                @Html.ValidationMessageFor(model => model.ctpc.MASACH, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.ctpt.GIA, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.ctpc.GIA, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.DropDownList("GIA", null, htmlAttributes: new { @class = "form-control", @id = "gia", @disabled = "disabled" })
-                @Html.ValidationMessageFor(model => model.ctpt.GIA, "", new { @class = "text-danger" })
+                @Html.ValidationMessageFor(model => model.ctpc.GIA, "", new { @class = "text-danger" })
             </div>
         </div>
 
@@ -42,7 +43,7 @@
             <label class="control-label col-md-2"> Số lượng đã lấy</label>
             <div class="col-md-10">
                 @Html.DropDownList("SLLAY", null, htmlAttributes: new { @class = "form-control", @id = "soluonglay", @disabled = "disabled" })
-                @Html.ValidationMessageFor(model => model.ctdl.SLLAY, "", new { @class = "text-danger" })
+                @Html.ValidationMessageFor(model => model.ctnxb.SLLAY, "", new { @class = "text-danger" })
             </div>
         </div>
 
@@ -50,15 +51,15 @@
             <label class="control-label col-md-2"> Số lượng đã bán</label>
             <div class="col-md-10">
                 @Html.DropDownList("SLDABAN", null, htmlAttributes: new { @class = "form-control", @id = "soluongban", @disabled = "disabled" })
-                @Html.ValidationMessageFor(model => model.ctdl.SLLAY, "", new { @class = "text-danger" })
+                @Html.ValidationMessageFor(model => model.ctnxb.SLLAY, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
             <label class="control-label col-md-2"> Số lượng</label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.ctpt.SOLUONG, new { htmlAttributes = new { @class = "form-control", @id = "amount", @Value = 0 } })
-                @Html.ValidationMessageFor(model => model.ctpt.SOLUONG, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.ctpc.SOLUONG, new { htmlAttributes = new { @class = "form-control", @id = "amount", @Value = 0 } })
+                @Html.ValidationMessageFor(model => model.ctpc.SOLUONG, "", new { @class = "text-danger" })
             </div>
         </div>
 
