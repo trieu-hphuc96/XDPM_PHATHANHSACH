@@ -1,0 +1,52 @@
+﻿@model IEnumerable<XDPM_PHATHANHSACH.Models.DAILY>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutSBAdmin.cshtml";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.TENDL)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DIACHI)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TONGSOSACH)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TIENCONNO)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.TENDL)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DIACHI)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TONGSOSACH)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TIENCONNO)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.MADL }) |
+            @Html.ActionLink("Details", "Details", new { id=item.MADL }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.MADL })
+        </td>
+    </tr>
+}
+
+</table>

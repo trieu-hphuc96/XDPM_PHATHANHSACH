@@ -7,7 +7,9 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using System.Windows.Forms;
 using XDPM_PHATHANHSACH.Models;
+using XDPM_PHATHANHSACH.ViewModels;
 
 namespace XDPM_PHATHANHSACH.Controllers
 {
@@ -135,25 +137,22 @@ namespace XDPM_PHATHANHSACH.Controllers
             DataTable dt = new DataTable();
             using (SqlConnection con = DBConnection.connectDB())
             {
-                string query = "select s.*, 0 + soluongnhap- soluongxuat as soluongton "
-                            + " from SACH s, (select s.MASACH, sum(ctpn.SOLUONG) as soluongnhap "
-                                        + "from sach s, PHIEUNHAP pn, CT_PHIEUNHAP ctpn "
-                                        + "where NGAYNHAP = '" + DateTime.Today + "' and pn.MAPN=ctpn.MAPN and ctpn.MASACH = s.MASACH "
-                                        + "group by s.MASACH) as slnhap, "
-                                        + "(select s.MASACH, sum(ctpn.SOLUONG) as soluongxuat "
-                                        + "from sach s, PHIEUXUAT pn, CT_PHIEUXUAT ctpn "
-                                        + "where NGAYXUAT = '" + DateTime.Today + "' and pn.MAPX=ctpn.MAPX and ctpn.MASACH = s.MASACH "
-                                        + "group by s.MASACH) as slxuat "
-                            + "where s.MASACH = slnhap.MASACH and s.MASACH = slxuat.MASACH";
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                SqlCommand cmd = new SqlCommand("sp_layThongKeTonKho", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@ngay", SqlDbType.Date);
+
+                cmd.Parameters["@ngay"].Value = DateTime.Today;
+
+                cmd.ExecuteNonQuery();
+
+                using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
                 {
-                    using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
-                    {
-                        sda.Fill(dt);
-                    }
+                    sda.Fill(dt);
                 }
             }
-            ViewBag.ngay = DateTime.Today;
+
+            ViewBag.ngay = DateTime.Today.ToString("dd/MM/yyyy");
+
             return View(dt);
         }
 
@@ -161,29 +160,208 @@ namespace XDPM_PHATHANHSACH.Controllers
         public ActionResult ThongKeTonKho(string datepicker)
         {
             DataTable dt = new DataTable();
-            if (datepicker != null)
-                using (SqlConnection con = DBConnection.connectDB())
+            using (SqlConnection con = DBConnection.connectDB())
+            {
+                SqlCommand cmd = new SqlCommand("sp_layThongKeTonKho", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@ngay", SqlDbType.Date);
+
+                cmd.Parameters["@ngay"].Value = DateTime.ParseExact(datepicker, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+
+                cmd.ExecuteNonQuery();
+
+                using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
                 {
-                    string query = "select s.*, 0 + soluongnhap- soluongxuat as soluongton "
-                                + " from SACH s, (select s.MASACH, sum(ctpn.SOLUONG) as soluongnhap "
-                                            + "from sach s, PHIEUNHAP pn, CT_PHIEUNHAP ctpn "
-                                            + "where NGAYNHAP = '" + datepicker + "' and pn.MAPN=ctpn.MAPN and ctpn.MASACH = s.MASACH "
-                                            + "group by s.MASACH) as slnhap, "
-                                            + "(select s.MASACH, sum(ctpn.SOLUONG) as soluongxuat "
-                                            + "from sach s, PHIEUXUAT pn, CT_PHIEUXUAT ctpn "
-                                            + "where NGAYXUAT = '" + datepicker + "' and pn.MAPX=ctpn.MAPX and ctpn.MASACH = s.MASACH "
-                                            + "group by s.MASACH) as slxuat "
-                                + "where s.MASACH = slnhap.MASACH and s.MASACH = slxuat.MASACH";
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
-                        {
-                            sda.Fill(dt);
-                        }
-                    }
+                    sda.Fill(dt);
                 }
+            }
+
             ViewBag.ngay = datepicker;
+
             return View(dt);
         }
+
+        public ActionResult thongkeDoanhThu()
+        {
+            PHIEUTHU_PHIEUCHI _ptpc = new PHIEUTHU_PHIEUCHI();
+            _ptpc.pt = new DataTable();
+            _ptpc.pc = new DataTable();
+            using (SqlConnection con = DBConnection.connectDB())
+            {
+                SqlCommand cmd = new SqlCommand("sp_layPhieuThu", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@tungay", SqlDbType.Date);
+                cmd.Parameters.Add("@denngay", SqlDbType.Date);
+
+                cmd.Parameters["@tungay"].Value = DateTime.Today;
+                cmd.Parameters["@denngay"].Value = DateTime.Today;
+
+                cmd.ExecuteNonQuery();
+
+                using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
+                {
+                    sda.Fill(_ptpc.pt);
+                }
+
+                cmd = new SqlCommand("sp_layPhieuChi", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@tungay", SqlDbType.Date);
+                cmd.Parameters.Add("@denngay", SqlDbType.Date);
+
+                cmd.Parameters["@tungay"].Value = DateTime.Today;
+                cmd.Parameters["@denngay"].Value = DateTime.Today;
+
+                cmd.ExecuteNonQuery();
+
+                using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
+                {
+                    sda.Fill(_ptpc.pc);
+                }
+            }
+
+            ViewBag.tungay = DateTime.Today.ToString("dd/MM/yyyy");
+            ViewBag.denngay = DateTime.Today.ToString("dd/MM/yyyy");
+
+            int TongThu = 0;
+            foreach (DataRow dr in _ptpc.pt.Rows)
+            {
+                TongThu += dr.Field<int>("TienThu");
+            }
+            int TongChi = 0;
+            foreach (DataRow dr in _ptpc.pc.Rows)
+            {
+                TongChi += dr.Field<int>("TienChi");
+            }
+
+            ViewBag.TongThu = TongThu;
+            ViewBag.TongChi = TongChi;
+            ViewBag.LoiNhuan = TongThu - TongChi;
+            ViewBag.LoiNgay = 0;
+
+            return View(_ptpc);
+        }
+
+        [HttpPost]
+        public ActionResult thongkeDoanhThu(string tungay, string denngay)
+        {
+            PHIEUTHU_PHIEUCHI _ptpc = new PHIEUTHU_PHIEUCHI();
+            _ptpc.pt = new DataTable();
+            _ptpc.pc = new DataTable();
+            int TongThu = 0;
+            int TongChi = 0;
+
+            if (DateTime.ParseExact(tungay, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture) > DateTime.ParseExact(denngay, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture))
+            {
+                using (SqlConnection con = DBConnection.connectDB())
+                {
+                    SqlCommand cmd = new SqlCommand("sp_layPhieuThu", con);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@tungay", SqlDbType.Date);
+                    cmd.Parameters.Add("@denngay", SqlDbType.Date);
+
+                    cmd.Parameters["@tungay"].Value = DateTime.Today;
+                    cmd.Parameters["@denngay"].Value = DateTime.Today;
+
+                    cmd.ExecuteNonQuery();
+
+                    using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
+                    {
+                        sda.Fill(_ptpc.pt);
+                    }
+
+                    cmd = new SqlCommand("sp_layPhieuChi", con);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@tungay", SqlDbType.Date);
+                    cmd.Parameters.Add("@denngay", SqlDbType.Date);
+
+                    cmd.Parameters["@tungay"].Value = DateTime.Today;
+                    cmd.Parameters["@denngay"].Value = DateTime.Today;
+
+                    cmd.ExecuteNonQuery();
+
+                    using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
+                    {
+                        sda.Fill(_ptpc.pc);
+                    }
+                }
+
+                ViewBag.tungay = DateTime.Today.ToString("dd/MM/yyyy");
+                ViewBag.denngay = DateTime.Today.ToString("dd/MM/yyyy");
+
+                TongThu = 0;
+                foreach (DataRow dr in _ptpc.pt.Rows)
+                {
+                    TongThu += dr.Field<int>("TienThu");
+                }
+                TongChi = 0;
+                foreach (DataRow dr in _ptpc.pc.Rows)
+                {
+                    TongChi += dr.Field<int>("TienChi");
+                }
+
+                ViewBag.TongThu = TongThu;
+                ViewBag.TongChi = TongChi;
+                ViewBag.LoiNhuan = TongThu - TongChi;
+                ViewBag.LoiNgay = 1;
+
+                return View(_ptpc);
+            }
+            else
+            {
+                using (SqlConnection con = DBConnection.connectDB())
+                {
+                    SqlCommand cmd = new SqlCommand("sp_layPhieuThu", con);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@tungay", SqlDbType.Date);
+                    cmd.Parameters.Add("@denngay", SqlDbType.Date);
+
+                    cmd.Parameters["@tungay"].Value = DateTime.ParseExact(tungay, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                    cmd.Parameters["@denngay"].Value = DateTime.ParseExact(denngay, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+
+                    cmd.ExecuteNonQuery();
+
+                    using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
+                    {
+                        sda.Fill(_ptpc.pt);
+                    }
+
+                    cmd = new SqlCommand("sp_layPhieuChi", con);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@tungay", SqlDbType.Date);
+                    cmd.Parameters.Add("@denngay", SqlDbType.Date);
+
+                    cmd.Parameters["@tungay"].Value = DateTime.Today;
+                    cmd.Parameters["@denngay"].Value = DateTime.Today;
+
+                    cmd.ExecuteNonQuery();
+
+                    using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
+                    {
+                        sda.Fill(_ptpc.pc);
+                    }
+                }
+            }
+
+            ViewBag.tungay = tungay;
+            ViewBag.denngay = denngay;
+
+            TongThu = 0;
+            foreach (DataRow dr in _ptpc.pt.Rows)
+            {
+                TongThu += dr.Field<int>("TienThu");
+            }
+            TongChi = 0;
+            foreach (DataRow dr in _ptpc.pc.Rows)
+            {
+                TongChi += dr.Field<int>("TienChi");
+            }
+
+            ViewBag.TongThu = TongThu;
+            ViewBag.TongChi = TongChi;
+            ViewBag.LoiNhuan = TongThu - TongChi;
+            ViewBag.LoiNgay = 0;
+
+            return View(_ptpc);
+        } 
     }
 }

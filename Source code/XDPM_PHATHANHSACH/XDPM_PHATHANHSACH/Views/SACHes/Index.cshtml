@@ -1,14 +1,14 @@
 ﻿@model IEnumerable<XDPM_PHATHANHSACH.Models.SACH>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Thông tin sách";
     Layout = "~/Views/Shared/_LayoutSBAdmin.cshtml";
 }
 
-<h2>Index</h2>
+<h2>Thông tin sách</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Thêm sách mới", "Create")
 </p>
 <table class="table">
     <tr>
@@ -54,9 +54,9 @@
             @Html.DisplayFor(modelItem => item.GIA)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.MASACH }) |
-            @Html.ActionLink("Details", "Details", new { id=item.MASACH }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.MASACH })
+            @Html.ActionLink("Sửa", "Edit", new { id=item.MASACH }) |
+            @Html.ActionLink("Chi tiết", "Details", new { id=item.MASACH }) |
+            @Html.ActionLink("Xoá", "Delete", new { id=item.MASACH })
         </td>
     </tr>
 }

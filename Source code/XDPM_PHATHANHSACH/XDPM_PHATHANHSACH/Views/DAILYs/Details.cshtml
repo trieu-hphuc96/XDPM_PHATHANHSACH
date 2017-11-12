@@ -1,0 +1,51 @@
+﻿@model XDPM_PHATHANHSACH.Models.DAILY
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_LayoutSBAdmin.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>DAILY</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.TENDL)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TENDL)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DIACHI)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DIACHI)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TONGSOSACH)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TONGSOSACH)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TIENCONNO)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TIENCONNO)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.MADL }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

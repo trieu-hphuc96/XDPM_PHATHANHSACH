@@ -1,0 +1,89 @@
+﻿@using System.Data
+@using System.Globalization
+@model DataTable
+
+@{
+    ViewBag.Title = "Thống Kê Công Nợ NXB";
+    Layout = "~/Views/Shared/_LayoutSBAdmin.cshtml";
+    CultureInfo cul = CultureInfo.GetCultureInfo("vi-VN");
+}
+
+<h2>Thống Kê Công Nợ NXB</h2>
+@using (Html.BeginForm())
+{
+    <hr />
+    <div class="form-horizontal">
+        <div class="form-group">
+            <div class="control-label col-md-2">
+                <label>Chọn ngày:</label>
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control" id="datepicker" name="ngay" value=@ViewBag.ngay>
+                @if (Model.Rows.Count <= 0)
+                {
+                    <div class="text-danger">Không tìm thấy</div>
+                }
+            </div>
+
+            <div class="col-md-2">
+                <input type="submit" value="Lọc" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+
+
+}
+
+<table class="table">
+    <tr>
+        <th>
+            Mã Đại Lý
+        </th>
+        <th>
+            Tên Đại Lý
+        </th>
+        <th>
+            Địa chỉ
+        </th>
+        <th>
+            Số điện thoại
+        </th>
+        <th>
+            Tiền đã nợ
+        </th>
+        <th>
+            Tiền đã trả
+        </th>
+        <th>
+            Tiền còn thiếu
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (DataRow row in Model.Rows)
+    {
+        <tr>
+            <td>
+                @(row.Field<int>("MANXB"))
+            </td>
+            <td>
+                @(row.Field<string>("TENNXB"))
+            </td>
+            <td>
+                @(row.Field<string>("DIACHI"))
+            </td>
+            <td>
+                @(row.Field<string>("SDT"))
+            </td>
+            <td>
+                @(row.Field<int>("TIENNO") > 0 ? double.Parse(row.Field<int>("TIENNO").ToString()).ToString("#,### VND", cul.NumberFormat) : "0 VND")
+            </td>
+            <td>
+                @(row.Field<int>("TIENCONG") > 0 ? double.Parse(row.Field<int>("TIENCONG").ToString()).ToString("#,### VND", cul.NumberFormat) : "0 VND")
+            </td>
+            <td>
+                @((row.Field<int>("TIENNO") - row.Field<int>("TIENCONG")) > 0 ? double.Parse((row.Field<int>("TIENNO") - row.Field<int>("TIENCONG")).ToString()).ToString("#,### VND", cul.NumberFormat) : "0 VND")
+            </td>
+        </tr>
+    }
+</table>

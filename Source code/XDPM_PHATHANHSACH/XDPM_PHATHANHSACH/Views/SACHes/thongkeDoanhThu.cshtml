@@ -1,0 +1,145 @@
+﻿@using System.Data
+@using System.Globalization
+@model XDPM_PHATHANHSACH.ViewModels.PHIEUTHU_PHIEUCHI
+
+@{
+    ViewBag.Title = "Thống Kê Doanh Thu";
+    Layout = "~/Views/Shared/_LayoutSBAdmin.cshtml";
+    CultureInfo cul = CultureInfo.GetCultureInfo("vi-VN");
+    if (ViewBag.LoiNgay == 1)
+    {
+        <script>alert("Từ ngày không được lớn hơn Đến ngày! Vui lòng nhập lại!")</script>
+    }
+}
+
+<h2>Thống Kê Doanh Thu</h2>
+@using (Html.BeginForm())
+{
+    <hr />
+    <h4>Tìm Kiếm Theo Ngày</h4>
+    <div class="form-horizontal">
+        <div class="form-group">
+            <div class="control-label col-md-2">
+                <label>Từ ngày:</label>
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control" id="datepicker" name="tungay" value=@ViewBag.tungay>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="control-label col-md-2">
+                <label>Đến ngày:</label>
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control" id="datepicker1" name="denngay" value=@ViewBag.denngay >
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-2">
+                <input type="submit" value="Lọc" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+
+    
+    <hr />
+    <h4>Thông tin lợi thuận</h4>
+    <div class="form-horizontal">
+
+        <div class="form-group">
+            <div class="control-label col-md-2">
+                <label>Tổng Thu:</label>
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control" id="TongThu" readonly value=@ViewBag.TongThu>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="control-label col-md-2">
+                <label>Tổng chi:</label>
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control" id="TongChi" readonly value=@ViewBag.TongChi>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="control-label col-md-2">
+                <label>Lợi nhuận thu được:</label>
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control" id="LoiNhuan" readonly value=@ViewBag.LoiNhuan>
+            </div>
+        </div>
+    </div>
+
+    <hr />
+    <h4>Thông tin đại lý</h4>
+<table class="table">
+    <tr>
+        <th class="col-md-2">
+            Mã Đại Lý
+        </th>
+        <th class="col-md-2">
+            Tên Đại Lý
+        </th>
+        <th class="col-md-2">
+            Tiền thu được
+        </th>
+    </tr>
+
+    @foreach (DataRow row in Model.pt.Rows)
+    {
+        <tr>
+            <td>
+                @(row.Field<int>("MADL"))
+            </td>
+            <td>
+                @(row.Field<string>("TENDL"))
+            </td>
+            <td>
+                @(row.Field<int>("TIENTHU") > 0 ? double.Parse(row.Field<int>("TIENTHU").ToString()).ToString("#,### VND", cul.NumberFormat) : "0 VND")
+            </td>
+        </tr>
+    }
+</table>
+
+    <h4>Thông tin NXB</h4>
+<table class="table">
+    <tr>
+        <th class="col-md-2">
+            Mã NXB
+        </th>
+        <th class="col-md-2">
+            Tên NXB
+        </th>
+        <th class="col-md-2">
+            Tiền đã chi
+        </th>
+    </tr>
+
+    @foreach (DataRow row in Model.pc.Rows)
+    {
+        <tr>
+            <td>
+                @(row.Field<int>("MANXB"))
+            </td>
+            <td>
+                @(row.Field<string>("TENNXB"))
+            </td>
+            <td>
+                @(row.Field<int>("TIENCHI") > 0 ? double.Parse(row.Field<int>("TIENCHI").ToString()).ToString("#,### VND", cul.NumberFormat) : "0 VND")
+            </td>
+        </tr>
+    }
+</table>
+    
+}
+<script>
+    window.onload = function () {
+        document.getElementById("TongThu").value = parseInt($("#TongThu").val()).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+        document.getElementById("TongChi").value = parseInt($("#TongChi").val()).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+        document.getElementById("LoiNhuan").value = parseInt($("#LoiNhuan").val()).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    };
+</script>

@@ -84,12 +84,21 @@
                             <a href="#"><i class="fa fa-money fa-fw"></i> Quản Lý Công Nợ<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
+                                    @Html.ActionLink("Xem công nợ đại lý", "thongkeCongNoDaiLy", "DaiLys")
+                                </li>
+                                <li>
+                                    @Html.ActionLink("Xem công nợ NXB", "thongkeCongNoNXB", "NXBs")
+                                </li>
+                                <li>
                                     @Html.ActionLink("Tạo phiếu thu", "Create", "PhieuThus")
                                 </li>
                                 <li>
                                     @Html.ActionLink("Tạo phiếu chi", "Create", "PhieuChis")
                                 </li>
                             </ul>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("thongkeDoanhThu", "SACHes")"><i class="fa fa-money fa-fw"></i> Thống Kê Doanh Thu</a>
                         </li>
                     </ul>
                 </div>
@@ -141,7 +150,12 @@
     <script src="~/scripts/jquery.validate-vsdoc.js"></script>
     <script>
         $("#datepicker").datepicker({
-            inline: true
+            inline: true,
+            dateFormat: 'dd/mm/yy'
+        });
+        $("#datepicker1").datepicker({
+            inline: true,
+            dateFormat: 'dd/mm/yy'
         });
     </script>
 

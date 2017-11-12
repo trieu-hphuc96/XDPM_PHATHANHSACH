@@ -163,6 +163,8 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\CT_PHIEUCHIController.cs" />
     <Compile Include="Controllers\CT_PHIEUTHUController.cs" />
+    <Compile Include="Controllers\DAILYsController.cs" />
+    <Compile Include="Controllers\NXBsController.cs" />
     <Compile Include="Controllers\PHIEUCHIsController.cs" />
     <Compile Include="Controllers\PHIEUNHAPsController.cs" />
     <Compile Include="Controllers\PHIEUTHUsController.cs" />
@@ -197,6 +199,7 @@
     <Compile Include="Models\NXB.cs" />
     <Compile Include="Models\PHIEUCHI.cs" />
     <Compile Include="Models\PHIEUNHAP.cs" />
+    <Compile Include="ViewModels\PHIEUTHU_PHIEUCHI.cs" />
     <Compile Include="ViewModels\PHIEUXUAT_CTPHIEUXUAT.cs" />
     <Compile Include="ViewModels\PHIEUNHAP_CTPHIEUNHAP.cs" />
     <Compile Include="Models\PHIEUTHU.cs" />
@@ -369,6 +372,19 @@
     <Content Include="Views\CT_PHIEUCHI\Details.cshtml" />
     <Content Include="Views\CT_PHIEUCHI\Edit.cshtml" />
     <Content Include="Views\CT_PHIEUCHI\Index.cshtml" />
+    <Content Include="Views\DAILYs\Create.cshtml" />
+    <Content Include="Views\DAILYs\Delete.cshtml" />
+    <Content Include="Views\DAILYs\Details.cshtml" />
+    <Content Include="Views\DAILYs\Edit.cshtml" />
+    <Content Include="Views\DAILYs\Index.cshtml" />
+    <Content Include="Views\DAILYs\thongkeCongNoDaiLy.cshtml" />
+    <Content Include="Views\NXBs\Create.cshtml" />
+    <Content Include="Views\NXBs\Delete.cshtml" />
+    <Content Include="Views\NXBs\Details.cshtml" />
+    <Content Include="Views\NXBs\Edit.cshtml" />
+    <Content Include="Views\NXBs\Index.cshtml" />
+    <Content Include="Views\NXBs\thongkeCongNoNXB.cshtml" />
+    <Content Include="Views\SACHes\thongkeDoanhThu.cshtml" />
     <None Include="Views\Shared\_LayoutSBAdmin.cshtml" />
     <Content Include="vendor\bootstrap-social\bootstrap-social.css" />
     <Content Include="vendor\bootstrap\css\bootstrap.css" />
